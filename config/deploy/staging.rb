@@ -1,11 +1,10 @@
 #Where we're deploying to on the server
-set :deploy_to, "/var/www/vhosts/site.com/capistrano" #TODO No trailing slash 
+set :deploy_to, "/var/www/vhosts/site.com/capistrano" #TODO No trailing slash
 
 #Remote Server credentials
 set :user, "user" #TODO
 
 set :domain, "domain.com" #TODO
-set :password, "password" #TODO
 set :port, "22" #TODO
 server "#{user}@#{domain}", :app #This line doesn't need to change
 
@@ -100,7 +99,7 @@ namespace(:deploy) do
   desc "Dump Local DB and replace Remote DB"
   task :dbupdate, :roles => :app do
     run_locally "mysqldump -u#{local_db_username} -p#{local_db_password} -h#{local_db_host} -C -c --skip-add-locks #{local_db_database} | ssh #{user}@#{domain} -p #{port} 'mysql -u #{remote_db_username} -p#{remote_db_password} #{remote_db_database}'"
-    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"  
+    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"
     run "php -f #{shared_path}/srdb/searchreplacedb2cli.php cli -h #{remote_db_host} -d #{remote_db_database} -u #{remote_db_username} -p #{remote_db_password} -c #{remote_db_charset} -s #{local_site_url} -r #{remote_site_url} guid=0"
     #run "php -f #{shared_path}/srdb/searchreplacedb2cli.php cli -h #{remote_db_host} -d #{remote_db_database} -u #{remote_db_username} -p #{remote_db_password} -c #{remote_db_charset} -s #{local_site_path} -r #{remote_site_path} guid=0"
   end
@@ -111,7 +110,7 @@ namespace(:deploy) do
   desc "Dump Local DB and replace Remote DB"
   task :mu_update, :roles => :app do
     run_locally "mysqldump -u#{local_db_username} -p#{local_db_password} -h#{local_db_host} -C -c --skip-add-locks #{local_db_database} --ignore-table=#{dbp}blogs --ignore-table=#{dbp}blog_versions --ignore_table=#{dbp}site --ignore-table=#{dbp}sitemeta | ssh #{user}@#{domain} -p #{port} 'mysql -u #{remote_db_username} -p#{remote_db_password} #{remote_db_database}'"
-    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"  
+    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"
     run "php -f #{shared_path}/srdb/searchreplacedb2cli.php cli -h #{remote_db_host} -d #{remote_db_database} -u #{remote_db_username} -p #{remote_db_password} -c #{remote_db_charset} -s #{local_site_url} -r #{remote_site_url} guid=0"
   end
 end
@@ -121,7 +120,7 @@ namespace(:deploy) do
   desc "Dump Local DB and replace Remote DB"
   task :local_mu_update, :roles => :app do
     run_locally "ssh #{user}@#{domain} -p #{port} 'mysqldump -u#{remote_db_username} -p#{remote_db_password} -h#{remote_db_host} #{remote_db_database} -C -c --skip-add-locks --ignore-table=#{dbp}blogs --ignore-table=#{dbp}blog_versions --ignore_table=#{dbp}site --ignore-table=#{dbp}sitemeta' | mysql -u#{local_db_username} -p#{local_db_password} -h#{local_db_host} #{local_db_database}"
-    run "[ -d #{local_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{local_path}/srdb"  
+    run "[ -d #{local_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{local_path}/srdb"
     run_locally "php -f #{local_path}/srdb/searchreplacedb2cli.php cli -h #{local_db_host} -d #{local_db_database} -u #{local_db_username} -p #{local_db_password} -c #{local_db_charset} -s #{remote_site_url} -r #{local_site_url} guid=0"
   end
 end
@@ -131,7 +130,7 @@ namespace(:deploy) do
   desc "Dump Local DB and replace Remote DB"
   task :update_posts, :roles => :app do
     run_locally "mysqldump -u#{local_db_username} -p#{local_db_password} -h#{local_db_host} -C -c --skip-add-locks #{local_db_database} #{db_prefix}posts #{db_prefix}postmeta #{db_prefix}options | ssh #{user}@#{domain} -p #{port} 'mysql -u #{remote_db_username} -p#{remote_db_password} #{remote_db_database}'"
-    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"  
+    run "[ -d #{shared_path}/srdb/ ] || git clone git://github.com/interconnectit/Search-Replace-DB.git #{shared_path}/srdb"
     run "php -f #{shared_path}/srdb/searchreplacedb2cli.php cli -h #{remote_db_host} -d #{remote_db_database} -u #{remote_db_username} -p #{remote_db_password} -c #{remote_db_charset} -s #{local_site_url} -r #{remote_site_url} guid=0"
   end
 end
